@@ -1,0 +1,61 @@
+/* DFA class holds the description of a definite
+ * finite automata. It is an information containing
+ * class that also holds a method to test an input string 
+ * to see if it is accepted by the dfa.
+ */
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.io.*;
+
+public class DFA {
+	private List<String> states;	// all the states in the DFA
+	private List<String> alphabet; 	// the alphabet to work over
+	private int[][] transitions;	// the transition table
+	private String currState;		// current state
+	private List<String> accept_states;
+	
+	/* constructor for the DFA, reads from a specified input file,
+	 * and initializes all of the values.
+	 */
+	public DFA (String inputfile) {
+		String[] contents = null;
+		
+		try {
+			contents = readFile(inputfile);
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		
+		if(contents == null) {
+			System.out.println("Error no contents in file");
+			return;
+		}
+		
+		if(contents.length < 1) {
+			System.out.println("Error: check inputfile");
+		}
+		
+		this.states = new ArrayList<String>(Arrays.asList(contents[0].split(" ")));
+		this.states 
+	}
+	
+	/* readFile(inputfile): 
+	 *	 Tries to open an inputfile, and reads all of the lines to
+	 * a string list. Then it returns an array of this list
+	 */
+	private String[] readFile(String inputfile) throws IOException {
+		FileReader fr = new FileReader(inputfile);
+		BufferedReader br = new BufferedReader(fr);
+		List<String> lines = new ArrayList<String>();
+		
+		String line = null;
+		while((line = br.readLine()) != null) {
+			lines.add(line);
+		}
+		br.close();
+		
+		
+		return lines.toArray(new String[lines.size()]);
+	}
+}

@@ -1,0 +1,7 @@
+/* DFA class holds the description of a definite
+ * finite automata. It is an information containing
+ * class that also holds a method to test an input string.
+ */
+public class DFA {
+
+}

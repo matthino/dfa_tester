@@ -1,0 +1,124 @@
+/* DFA class holds the description of a definite
+ * finite automata. It is an information containing
+ * class that also holds a method to test an input string 
+ * to see if it is accepted by the dfa.
+ */
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.io.*;
+
+public class DFA {
+	private List<String> states;	// all the states in the DFA
+	private List<String> alphabet; 	// the alphabet to work over
+	private int[][] transitions;	// the transition table
+	private String currState;		// current state
+	private List<String> accept_states;
+	
+	/* constructor for the DFA, reads from a specified input file,
+	 * and initializes all of the values.
+	 */
+	public DFA (String inputfile) {
+		String[] contents = null;
+		
+		try {
+			contents = readFile(inputfile);
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		
+		if(!validContents(contents)) return;
+		
+		this.states = new ArrayList<String>(Arrays.asList(contents[0].split(" ")));
+		this.alphabet = new ArrayList<String>(Arrays.asList(contents[1].split(" ")));
+		int num_states = this.states.size();
+		int alpha_len = this.alphabet.size();
+		
+		// initialize the transition table to -1
+		initTransitions(num_states, alpha_len);
+		
+		// initialize the transition table
+		for(int i = 0; i < num_states*alpha_len; ++i) {
+			if(!addedTransition(contents[i+2])) {
+				return;
+			}
+			
+		}
+		
+	}
+	
+	/* readFile(inputfile): 
+	 *	 Tries to open an inputfile, and reads all of the lines to
+	 * a string list. Then it returns an array of this list
+	 */
+	private String[] readFile(String inputfile) throws IOException {
+		FileReader fr = new FileReader(inputfile);
+		BufferedReader br = new BufferedReader(fr);
+		List<String> lines = new ArrayList<String>();
+		
+		String line = null;
+		while((line = br.readLine()) != null) {
+			lines.add(line);
+		}
+		br.close();
+		
+		
+		return lines.toArray(new String[lines.size()]);
+	}
+	
+	/* this method checks that the contents of the file that
+	 * are read are valid.
+	 */
+	private boolean validContents (String[] contents) {
+		if(contents == null) {
+			System.out.println("Error no contents in file");
+			return false;
+		}
+		
+		if(contents.length < 1) {
+			System.out.println("Error: check inputfile");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	private boolean addedTransition(String trans) {
+		if(trans == null) return false;
+		String[] tranSplit = trans.split(" ");
+		if(tranSplit.length != 3) return false;
+			
+		// check that the the states and alphabet letter is valid.
+		int currState = this.states.indexOf(tranSplit[0]);
+		int alpha = this.alphabet.indexOf(tranSplit[1]);
+		int nextState = this.states.indexOf(tranSplit[2]);
+		
+		// states are not in the list, or alphachar is not
+		if(currState == -1 || alpha == -1 || nextState == -1) {
+			System.out.println("Error invalid transition line:");
+			System.out.println(trans);
+			return false;
+		}
+		
+		// duplicate transitions
+		if(this.transitions[currState][alpha] != -1) {
+			System.out.println("Error: duplicate transitions");
+			System.out.println(trans);
+			return false;
+		}
+		
+		// add the transition
+		this.transitions[currState][alpha] = nextState;
+		return true;
+	}
+	
+	/* initialize the transitions to -1 */
+	private void initTransitions(int s, int a) {
+		this.transitions = new int[s][a];
+		for(int i = 0; i < s; ++i) {
+			for(int j = 0; j < a; ++j) {
+				this.transitions[i][j] = -1;
+			}
+		}
+	}
+}
