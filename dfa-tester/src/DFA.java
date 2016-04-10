@@ -35,6 +35,16 @@ public class DFA {
 		int num_states = this.states.size();
 		int alpha_len = this.alphabet.size();
 
+		//test print of alphabet
+		String listString = "";
+
+		for (String s : alphabet)
+		{
+    	listString += s + "\t";
+		}
+
+		System.out.println(listString);
+
 		// 2: states/alphabet, num_states*alpha_len: transitions
 		// 2: start state/accept states
 		int propersize = 2 + num_states*alpha_len + 2;
@@ -143,8 +153,32 @@ public class DFA {
 		}
 	}
 
+	/* Checks the input string
+	* compares against input alphabet
+	* returns boolean based on if input string is within alphabet standards
+	*/
+	private boolean checkString(String[] myString){
+
+		String[] testArray = new String[] {"1","1","0"};
+		//get size of string to iterate through
+		int stringSize = testArray.length;
+		Arrays.sort(testArray);
+
+		//iterate over string, checking for each char of the string in
+		//our alphabet array
+		for(int i=0; i<stringSize; i++){
+			String currentLetter = testArray[i];
+			int rtnVal = alphabet.indexOf(currentLetter);
+			System.out.println(rtnVal);
+			 if(rtnVal == -1){return false;} //char is not in DFA alphabet
+		}
+		return true; //all chars of string are in DFA alphabet
+	}
+
+//main method
 	public static void main(String [] args)
 	{
 		DFA myDFA = new DFA(myFile);
+		myDFA.checkString(args);
 	}
 }
