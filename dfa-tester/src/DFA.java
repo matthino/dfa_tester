@@ -72,7 +72,7 @@ public class DFA {
 	 *	 Tries to open an inputfile, and reads all of the lines to
 	 * a string list. Then it returns an array of this list
 	 */
-	private String[] readFile(String inputfile) throws IOException {
+	public static String[] readFile(String inputfile) throws IOException {
 		FileReader fr = new FileReader(inputfile);
 		BufferedReader br = new BufferedReader(fr);
 		List<String> lines = new ArrayList<String>();

@@ -1,0 +1,57 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Tester {
+	private static String myFile = "file.txt";
+	private static String inputFile = "testStrings.txt";
+	
+	public Tester(String inputFile) {
+		
+	}
+
+	/* The main function creates a DFA, defined in file.txt
+	 * Then tests strings against this DFA, printing if they're
+	 * accepted or not.
+	 */
+	public static void main(String [] args)
+	{
+		// create a DFA 
+		DFA myDFA = new DFA(myFile);
+		
+		Tester myTester = new Tester(inputFile);
+		
+		// read the input strings we want to test on the DFA.
+		String contents[] = null;
+		try {
+			contents = readFile(inputFile);
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		
+		// test every input string on the DFA
+		for(int i = 0; i < contents.length; i++){
+			
+		}
+		
+		
+	}
+	
+	private String[] readFile(String inputfile) throws IOException {
+		FileReader fr = new FileReader(inputfile);
+		BufferedReader br = new BufferedReader(fr);
+		List<String> lines = new ArrayList<String>();
+
+		String line = null;
+		while((line = br.readLine()) != null) {
+			lines.add(line);
+		}
+		br.close();
+
+		return lines.toArray(new String[lines.size()]);
+	}
+	
+	
+}

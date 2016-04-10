@@ -1,0 +1,9 @@
+
+public class Tester {
+	private static String myFile = "file.txt";
+	private static String inputFile = "testStrings.txt";
+	
+	
+	
+	
+}
