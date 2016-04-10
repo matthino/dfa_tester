@@ -26,10 +26,9 @@ public class Tester {
 		
 		// test every input string on the DFA
 		for(int i = 0; i < myTester.inputs.length; i++){
-			String input = myTester.inputs[i];
 			boolean accept = true;
 			
-			myTester.printResult(input, accept);
+			myTester.printResult(myTester.inputs[i], accept);
 		}
 		
 		
