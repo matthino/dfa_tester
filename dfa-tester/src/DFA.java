@@ -1,6 +1,6 @@
 /* DFA class holds the description of a definite
  * finite automata. It is an information containing
- * class that also holds a method to test an input string 
+ * class that also holds a method to test an input string
  * to see if it is accepted by the dfa.
  */
 import java.util.ArrayList;
@@ -12,80 +12,93 @@ public class DFA {
 	private List<String> states;	// all the states in the DFA
 	private List<String> alphabet; 	// the alphabet to work over
 	private int[][] transitions;	// the transition table
-	private int currState;		// current state
+	//private int currState;		// current state
+	private int startState; //starting state
 	private List<String> accept_states;
-	
+	private static String myFile = "file.txt";
+
 	/* constructor for the DFA, reads from a specified input file,
 	 * and initializes all of the values.
 	 */
 	public DFA (String inputfile) {
 		String[] contents = null;
-		
+
 		try {
 			contents = readFile(inputfile);
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
-		
+
 		if(!validContents(contents)) return;
-		
+
 		this.states = new ArrayList<String>(Arrays.asList(contents[0].split(" ")));
 		this.alphabet = new ArrayList<String>(Arrays.asList(contents[1].split(" ")));
 		int num_states = this.states.size();
 		int alpha_len = this.alphabet.size();
-		
+
+		//test print of alphabet
+		String listString = "";
+
+		for (String s : alphabet)
+		{
+    	listString += s + "\t";
+		}
+
+		//System.out.println(listString);
+
 		// 2: states/alphabet, num_states*alpha_len: transitions
 		// 2: start state/accept states
-		int propersize = 2 + num_states*alpha_len + 2; 
+		int propersize = 2 + num_states*alpha_len + 2;
 		if(contents.length != propersize ) {
 			System.out.println("File not of proper length");
 		}
-		
+
 		// init the transition table to filled with -1
 		initTransitions(num_states, alpha_len);
-		
+
 		// initialize the transition table
 		for(int i = 0; i < num_states*alpha_len; ++i) {
 			if(!addedTransition(contents[i+2])) {
 				return;
 			}
 		}
-		
+
 		// second to the last line of the file is the start state
-		this.currState = this.states.indexOf(contents[contents.length - 2]);
+		this.startState = this.states.indexOf(contents[contents.length - 2]);
 		// check valid start state
-		if(this.currState == -1) {
+		if(this.startState == -1) {
 			System.out.println("Error invalid start state");
 		}
-		
+
 		this.accept_states = new ArrayList<String>(
 				Arrays.asList(contents[contents.length-1].split(" ")));
+
 	}
-	
+
 	/* The below methods are used for initializing the DFA
 	 * many of which are used to check that the file contents
 	 * are of the proper form.
 	 */
-	
-	/* readFile(inputfile): 
+
+	/* readFile(inputfile):
 	 *	 Tries to open an inputfile, and reads all of the lines to
 	 * a string list. Then it returns an array of this list
 	 */
-	private String[] readFile(String inputfile) throws IOException {
+	public static String[] readFile(String inputfile) throws IOException {
 		FileReader fr = new FileReader(inputfile);
 		BufferedReader br = new BufferedReader(fr);
 		List<String> lines = new ArrayList<String>();
-		
+
 		String line = null;
 		while((line = br.readLine()) != null) {
 			lines.add(line);
 		}
 		br.close();
-		
-		
+
+
 		return lines.toArray(new String[lines.size()]);
 	}
-	
+
 	/* this method checks that the contents of the file that
 	 * are read are valid.
 	 */
@@ -94,44 +107,44 @@ public class DFA {
 			System.out.println("Error no contents in file");
 			return false;
 		}
-		
+
 		if(contents.length < 2) {
 			System.out.println("Error: check inputfile");
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	private boolean addedTransition(String trans) {
 		if(trans == null) return false;
 		String[] tranSplit = trans.split(" ");
 		if(tranSplit.length != 3) return false;
-			
+
 		// check that the the states and alphabet letter is valid.
 		int currState = this.states.indexOf(tranSplit[0]);
 		int alpha = this.alphabet.indexOf(tranSplit[1]);
 		int nextState = this.states.indexOf(tranSplit[2]);
-		
+
 		// states are not in the list, or alpha char is not
 		if(currState == -1 || alpha == -1 || nextState == -1) {
 			System.out.println("Error invalid transition line:");
 			System.out.println(trans);
 			return false;
 		}
-		
+
 		// avoid duplicate transitions
 		if(this.transitions[currState][alpha] != -1) {
 			System.out.println("Error: duplicate transitions");
 			System.out.println(trans);
 			return false;
 		}
-		
+
 		// add the transition
 		this.transitions[currState][alpha] = nextState;
 		return true;
 	}
-	
+
 	/* initialize the transitions to -1 */
 	private void initTransitions(int s, int a) {
 		this.transitions = new int[s][a];
@@ -140,5 +153,36 @@ public class DFA {
 				this.transitions[i][j] = -1;
 			}
 		}
+	}
+
+
+	/* Takes our input string
+	* breaks down by character, makes sure char is in DFA alphabet
+	* makes char moves throughout the DFA until end of string
+	* checks to see if we end up at an accept state
+	*/
+	public boolean makeTransitions(String myString){
+
+		int stringSize = myString.length();
+		int currState = startState;
+
+		for(int i=0; i<stringSize; i++){
+			String currentCommandLetter = myString.substring(i, i+1);
+			int currentCommandIndex = alphabet.indexOf(currentCommandLetter);
+			if(currentCommandIndex == -1){return false;} //double check our letter
+			currState = transitions[currState][currentCommandIndex];
+		}
+		String state = states.get(currState);
+		int doWeAcceptTheCurrentStateLetsFindOut = accept_states.indexOf(state);
+		if (doWeAcceptTheCurrentStateLetsFindOut == -1){return false;} //not an accept state
+
+		return true; //we landed on an accept state, we accept the string
+
+	}
+
+//main method
+	public static void main(String [] args)
+	{
+		DFA myDFA = new DFA(myFile);
 	}
 }

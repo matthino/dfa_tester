@@ -1,0 +1,27 @@
+import java.io.IOException;
+
+public class Tester {
+	private static String myFile = "file.txt";
+	private static String inputFile = "testStrings.txt";
+	
+	
+	
+	public static void main(String [] args)
+	{
+		// create a DFA 
+		DFA myDFA = new DFA(myFile);
+		
+		// read the input strings we want to test on the DFA.
+		String contents[];
+		try {
+			contents = readFile(inputfile);
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		
+		
+		
+	}
+	
+	
+}
