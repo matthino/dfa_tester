@@ -12,7 +12,8 @@ public class DFA {
 	private List<String> states;	// all the states in the DFA
 	private List<String> alphabet; 	// the alphabet to work over
 	private int[][] transitions;	// the transition table
-	private int currState;		// current state
+	//private int currState;		// current state
+	private int startState; //starting state
 	private List<String> accept_states;
 	private static String myFile = "file.txt";
 
@@ -43,7 +44,7 @@ public class DFA {
     	listString += s + "\t";
 		}
 
-		System.out.println(listString);
+		//System.out.println(listString);
 
 		// 2: states/alphabet, num_states*alpha_len: transitions
 		// 2: start state/accept states
@@ -63,14 +64,15 @@ public class DFA {
 		}
 
 		// second to the last line of the file is the start state
-		this.currState = this.states.indexOf(contents[contents.length - 2]);
+		this.startState = this.states.indexOf(contents[contents.length - 2]);
 		// check valid start state
-		if(this.currState == -1) {
+		if(this.startState == -1) {
 			System.out.println("Error invalid start state");
 		}
 
 		this.accept_states = new ArrayList<String>(
 				Arrays.asList(contents[contents.length-1].split(" ")));
+
 	}
 
 	/* The below methods are used for initializing the DFA
@@ -153,32 +155,34 @@ public class DFA {
 		}
 	}
 
-	/* Checks the input string
-	* compares against input alphabet
-	* returns boolean based on if input string is within alphabet standards
+
+	/* Takes our input string
+	* breaks down by character, makes sure char is in DFA alphabet
+	* makes char moves throughout the DFA until end of string
+	* checks to see if we end up at an accept state
 	*/
-	private boolean checkString(String[] myString){
+	public boolean makeTransitions(String myString){
 
-		String[] testArray = new String[] {"1","1","0"};
-		//get size of string to iterate through
-		int stringSize = testArray.length;
-		Arrays.sort(testArray);
+		int stringSize = myString.length();
+		int currState = startState;
 
-		//iterate over string, checking for each char of the string in
-		//our alphabet array
 		for(int i=0; i<stringSize; i++){
-			String currentLetter = testArray[i];
-			int rtnVal = alphabet.indexOf(currentLetter);
-			System.out.println(rtnVal);
-			 if(rtnVal == -1){return false;} //char is not in DFA alphabet
+			String currentCommandLetter = myString.substring(i, i+1);
+			int currentCommandIndex = alphabet.indexOf(currentCommandLetter);
+			if(currentCommandIndex == -1){return false;} //double check our letter
+			currState = transitions[currState][currentCommandIndex];
 		}
-		return true; //all chars of string are in DFA alphabet
+		String state = states.get(currState);
+		int doWeAcceptTheCurrentStateLetsFindOut = accept_states.indexOf(state);
+		if (doWeAcceptTheCurrentStateLetsFindOut == -1){return false;} //not an accept state
+
+		return true; //we landed on an accept state, we accept the string
+
 	}
 
 //main method
 	public static void main(String [] args)
 	{
 		DFA myDFA = new DFA(myFile);
-		myDFA.checkString(args);
 	}
 }
