@@ -2,6 +2,10 @@
  * finite automata. It is an information containing
  * class that also holds a method to test an input string
  * to see if it is accepted by the dfa.
+ *
+ * Matt Hino & Sara Meisburger
+ * Theory of Comp
+ * April 2016
  */
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -167,11 +171,15 @@ public class DFA {
 		int currState = startState;
 
 		for(int i=0; i<stringSize; i++){
+			//get the input string, separate it by each char so we can make a move
 			String currentCommandLetter = myString.substring(i, i+1);
+			//ensure that the alpha char is actually in our alphabet otherwise illegal string
 			int currentCommandIndex = alphabet.indexOf(currentCommandLetter);
 			if(currentCommandIndex == -1){return false;} //double check our letter
+			//update our current state
 			currState = transitions[currState][currentCommandIndex];
 		}
+		//determine if we are in an accept state when we terminate
 		String state = states.get(currState);
 		int doWeAcceptTheCurrentStateLetsFindOut = accept_states.indexOf(state);
 		if (doWeAcceptTheCurrentStateLetsFindOut == -1){return false;} //not an accept state
